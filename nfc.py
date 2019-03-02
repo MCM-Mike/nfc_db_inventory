@@ -4,8 +4,8 @@ from smartcard.CardConnectionObserver import ConsoleCardConnectionObserver
 from smartcard.CardMonitoring import CardMonitor, CardObserver
 from smartcard.util import toHexString, toBytes
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+#from sqlalchemy import create_engine
+#from sqlalchemy.orm import sessionmaker
 
 from models import NfcTag, MYSQL_CONN_STR, Base
 
@@ -15,13 +15,13 @@ SELECT = [0xA0, 0xA4, 0x00, 0x00, 0x02]
 DF_TELECOM = [0x7F, 0x10]
 
 
-engine = create_engine(MYSQL_CONN_STR)
+#engine = create_engine(MYSQL_CONN_STR)
 
-Base.metadata.bind = engine
+#Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind=engine)
+#DBSession = sessionmaker(bind=engine)
 
-session = DBSession()
+#session = DBSession()
 
 
 # from https://pyscard.sourceforge.io/user-guide.html#the-answer-to-reset-atr
@@ -36,7 +36,9 @@ class selectDFTELECOMObserver(CardObserver):
         self.observer = ConsoleCardConnectionObserver()
 
     def update(self, observable, actions):
+        print('in update')
         (addedcards, removedcards) = actions
+        print(addedcards, removedcards)
         for card in addedcards:
             print("+Inserted: ", toHexString(card.atr))
             card.connection = card.createConnection()
@@ -49,9 +51,9 @@ class selectDFTELECOMObserver(CardObserver):
             uid = toHexString(response).replace(' ','')
             print('card uid = ', uid)
 
-            new_tag = NfcTag(tag_id=uid)
-            session.add(new_tag)
-            session.commit()
+            #new_tag = NfcTag(tag_id=uid)
+            #session.add(new_tag)
+            #session.commit()
 
             #apdu = SELECT + DF_TELECOM
             #response, sw1, sw2 = card.connection.transmit(apdu)
