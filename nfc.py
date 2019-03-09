@@ -7,7 +7,7 @@ from smartcard.util import toHexString, toBytes
 #from sqlalchemy import create_engine
 #from sqlalchemy.orm import sessionmaker
 
-from models import NfcTag, MYSQL_CONN_STR, Base
+#from models import NfcTag, MYSQL_CONN_STR, Base
 
 # define the apdus used in this script
 GET_RESPONSE = [0XA0, 0XC0, 00, 00]
