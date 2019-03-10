@@ -1,18 +1,28 @@
-#Auth WP Asura dev team
-#RESTserver for fetching data from Thai national id card
-#19/11/2018
-
-from flask import Flask, Response
-from flask_cors import CORS
-from smartcard.CardConnection import CardConnection
-from smartcard.CardType import AnyCardType
-from smartcard.CardRequest import CardRequest
-from smartcard.util import toHexString, toBytes
 import json
 import base64
 
+from flask import Flask, Response
+from flask_cors import CORS
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from smartcard.CardType import AnyCardType
+from smartcard.CardRequest import CardRequest
+from smartcard.util import toHexString, toBytes
+from smartcard.CardConnection import CardConnection
+
+from models import NfcTag, MYSQL_CONN_STR, Base
+
 app = Flask(__name__)
 CORS(app)
+
+
+engine = create_engine(MYSQL_CONN_STR)
+
+Base.metadata.bind = engine
+
+DBSession = sessionmaker(bind=engine)
+
+session = DBSession()
 
 
 @app.route('/get_status')
@@ -52,6 +62,12 @@ def get_data():
     command = toBytes('FF CA 00 00 00')
     response, sw1, sw2 = cardservice.connection.transmit(command)
     uid = toHexString(response).replace(' ','')
+
+    new_tag = NfcTag(tag_id=uid)
+    session.add(new_tag)
+    session.commit()
+
+
     return Response(json.dumps(uid), mimetype='application/json')
 
 
