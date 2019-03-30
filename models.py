@@ -4,24 +4,28 @@ from datetime import datetime
 
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String, engine
+from sqlalchemy import Column, ForeignKey, Date, String, engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from flask_sqlalchemy import SQLAlchemy
+
+
+db = SQLAlchemy()
 
 MYSQL_CONN_STR = 'mysql://root:root@localhost/nfc'
-
-Base = declarative_base()
 
 
 PRIVATE_KEY_LENGTH = 16
 
 
-class NfcTag(Base):
+class NfcTag(db.Model):
     __tablename__ = 'nfc_tag'
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
-    tag_id = Column(String(PRIVATE_KEY_LENGTH, 'ascii_bin'), nullable=False, primary_key=True)
+    tag_id = db.Column(db.String(PRIVATE_KEY_LENGTH, 'ascii_bin'), nullable=False, primary_key=True)
+    date_purchased = db.Column(Date)
+    last_time_used = db.Column(Date)
 
 
 
