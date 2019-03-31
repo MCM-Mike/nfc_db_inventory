@@ -93,6 +93,8 @@ def edit_nfctag():
                 message = "Failed to add a tag: {}".format(str(e))
             else:
                 message = "New tag has been added successfully"
+        else:
+            message = "Tag data has been read successfully"
 
     return render_template('nfctag_data.html', tag_id=tag.tag_id, date_purchased=tag.date_purchased, last_time_used=tag.last_time_used, message=message)
 
