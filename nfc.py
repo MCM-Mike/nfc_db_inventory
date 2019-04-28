@@ -51,9 +51,9 @@ class selectDFTELECOMObserver(CardObserver):
             uid = toHexString(response).replace(' ','')
             print('card uid = ', uid)
 
-            new_tag = NfcTag(tag_id=uid)
-            session.add(new_tag)
-            session.commit()
+            #new_tag = NfcTag(tag_id=uid)
+            #session.add(new_tag)
+            #session.commit()
 
             #apdu = SELECT + DF_TELECOM
             #response, sw1, sw2 = card.connection.transmit(apdu)
