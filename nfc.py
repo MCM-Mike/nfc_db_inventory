@@ -7,7 +7,7 @@ from smartcard.util import toHexString, toBytes
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import NfcTag, MYSQL_CONN_STR, Base
+#from models import NfcTag, MYSQL_CONN_STR, Base
 
 # define the apdus used in this script
 GET_RESPONSE = [0XA0, 0XC0, 00, 00]
@@ -15,13 +15,13 @@ SELECT = [0xA0, 0xA4, 0x00, 0x00, 0x02]
 DF_TELECOM = [0x7F, 0x10]
 
 
-engine = create_engine(MYSQL_CONN_STR)
+#engine = create_engine(MYSQL_CONN_STR)
 
-Base.metadata.bind = engine
+#Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind=engine)
+#DBSession = sessionmaker(bind=engine)
 
-session = DBSession()
+#session = DBSession()
 
 
 # from https://pyscard.sourceforge.io/user-guide.html#the-answer-to-reset-atr
