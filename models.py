@@ -4,7 +4,7 @@ from datetime import datetime
 
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Date, String, engine
+from sqlalchemy import Column, ForeignKey, Date, String, engine, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -26,6 +26,7 @@ class NfcTag(db.Model):
     tag_id = db.Column(db.String(PRIVATE_KEY_LENGTH, 'ascii_bin'), nullable=False, primary_key=True)
     date_purchased = db.Column(Date)
     last_time_used = db.Column(Date)
+    description = db.Column(Text(collation='utf8mb4_unicode_ci'), default='')
 
 
 
