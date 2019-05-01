@@ -71,6 +71,7 @@ def edit_nfctag():
         tag = NfcTag.query.get(uid)
 
         for column, value in request.form.items():
+            value = None if value == '' else value
             setattr(tag, column, value)
 
         db.session.commit()
@@ -96,7 +97,8 @@ def edit_nfctag():
         else:
             message = "Tag data has been read successfully"
 
-    return render_template('nfctag_data.html', tag_id=tag.tag_id, description=tag.description, date_purchased=tag.date_purchased, last_time_used=tag.last_time_used, message=message)
+    description = '' if tag.description is None else tag.description
+    return render_template('nfctag_data.html', tag_id=tag.tag_id, description=description, date_purchased=tag.date_purchased, last_time_used=tag.last_time_used, message=message)
 
 
 if __name__ == '__main__':
