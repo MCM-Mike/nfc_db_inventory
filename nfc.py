@@ -6,6 +6,7 @@ from smartcard.util import toHexString, toBytes
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from flask_socketio import SocketIO, emit
 
 #from models import NfcTag, MYSQL_CONN_STR, Base
 
@@ -51,6 +52,8 @@ class selectDFTELECOMObserver(CardObserver):
             uid = toHexString(response).replace(' ','')
             print('card uid = ', uid)
 
+            socketio.emit('newnumber', {'number': uid}, namespace='/test')
+
             #new_tag = NfcTag(tag_id=uid)
             #session.add(new_tag)
             #session.commit()
@@ -65,21 +68,34 @@ class selectDFTELECOMObserver(CardObserver):
             print("-Removed: ", toHexString(card.atr))
 
 
+class CardObserver():
+    def __init__(self):
+        self._cardmonitor = CardMonitor()
+        self._selectobserver = selectDFTELECOMObserver()
+
+    def start_observe(self):
+        print("observer started")
+        socketio.emit('newnumber', {'number': 'start'}, namespace='/test')
+        self._cardmonitor.addObserver(self._selectobserver)
+
+    def stop_observe(self):
+        self._cardmonitor.deleteObserver(self._selectobserver)
+
 
 if __name__ == '__main__':
 
     print("Insert or remove a SIM card in the system.")
     print("This program will exit in 60 seconds")
     print("")
-    cardmonitor = CardMonitor()
-    selectobserver = selectDFTELECOMObserver()
-    cardmonitor.addObserver(selectobserver)
 
+    observer = CardObserver()
+    observer.start_observe()
     sleep(60)
+    observer.stop_observe()
 
     # don't forget to remove observer, or the
     # monitor will poll forever...
-    cardmonitor.deleteObserver(selectobserver)
+
 
     import sys
     if 'win32' == sys.platform:

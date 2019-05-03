@@ -1,7 +1,12 @@
+<!DOCTYPE html>
 <html>
 <head>
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script src="static/js/application.js"></script>
+    <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
 </head>
-</head>
+
 <style>
 div.centre {
   width: 300px;
@@ -11,6 +16,7 @@ div.centre {
   margin-right: auto;
 }
 </style>
+
 <body>
     <div class="centre">
         <form method="post">
@@ -32,12 +38,9 @@ div.centre {
             <br><br>
             <p><input type="submit" style="text-align: center"></p>
             <br><br>
-            <p> {{ message }} </p>
-        </form>
-
-        <form method="get">
-        <input type="submit" value="Read a tag">
+            <p id="status_message"> {{ message }} </p>
         </form>
     </div>
+
 </body>
 </html>
