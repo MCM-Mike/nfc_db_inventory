@@ -21,7 +21,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
 from models import NfcTag, MYSQL_CONN_STR, db
-from card_monitor import MyCardMonitor, CardMonitorThread, has_card
+from card_monitor import MyCardMonitor, CardMonitorThread
 
 
 app = Flask(__name__)
@@ -45,8 +45,8 @@ thread_stop_event = Event()
 mycard_monitor = MyCardMonitor(socketio, app)
 
 
-@socketio.on('connect', namespace='/test')
-def test_connect():
+@socketio.on('connect', namespace='/nfc')
+def nfc_connect():
     # need visibility of the global thread object
     global thread
     print('Client connected')
@@ -57,8 +57,8 @@ def test_connect():
         thread.start()
 
 
-@socketio.on('disconnect', namespace='/test')
-def test_disconnect():
+@socketio.on('disconnect', namespace='/nfc')
+def nfc_disconnect():
     print('Client disconnected')
     #mycard_monitor.stop_observe()
 
@@ -82,22 +82,22 @@ def get_status():
     return Response(json.dumps(resultdict), mimetype='application/json')
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def edit_nfctag():
 
-    if not has_card():
+    if not mycard_monitor.has_card():
         return render_template('nfctag_data.html', message='Please put a tag on the reader.')
 
-    message = ''
+    if request.method == 'GET':
+        # we show the html template here and the data will come from the nfc monitor thread
+        return render_template('nfctag_data.html', message='Tag data is comming...')
 
-    if request.method == 'POST':
-        #message = 'inside post'
+    elif request.method == 'POST':
 
         tag_id = request.form['tag_id']
         tag = NfcTag.query.get(tag_id)
 
         if tag is None:
-            message = 'inside get tag is none'
             tag = NfcTag(tag_id=uid)
             try:
                 db.session.add(tag)
@@ -115,8 +115,8 @@ def edit_nfctag():
 
         message = "The tag data has been updated successfully"
 
-    description = '' if tag.description is None else tag.description
-    return render_template('nfctag_data.html', tag_id=tag.tag_id, description=description, date_purchased=tag.date_purchased, last_time_used=tag.last_time_used, message=message)
+        description = '' if tag.description is None else tag.description
+        return render_template('nfctag_data.html', tag_id=tag.tag_id, description=description, date_purchased=tag.date_purchased, last_time_used=tag.last_time_used, message=message)
 
 
 if __name__ == '__main__':

@@ -48,10 +48,37 @@ class MyCardObserver(CardObserver):
                 description = '' if tag.description is None else tag.description
                 date_purchased = '' if tag.date_purchased is None else tag.date_purchased.strftime("%Y-%m-%d")
                 last_time_used = '' if tag.last_time_used is None else tag.last_time_used.strftime("%Y-%m-%d")
-                self._socketio.emit('newnumber', {'tag_id': uid, 'description': description, 'date_purchased': date_purchased, 'last_time_used': last_time_used}, namespace='/test')
+                self._socketio.emit('tagdata', {'tag_id': uid, 'description': description, 'date_purchased': date_purchased, 'last_time_used': last_time_used}, namespace='/nfc')
 
         for card in removedcards:
             print("-Removed: ", toHexString(card.atr))
+
+    def get_card_id(self):
+        cardtype = AnyCardType()
+        cardrequest = CardRequest( timeout=1, cardType=cardtype )
+
+        try:
+            cardservice = cardrequest.waitforcard()
+        except:
+            return None
+
+        stat = cardservice.connection.connect()
+
+        command = toBytes('FF CA 00 00 00')
+        response, sw1, sw2 = cardservice.connection.transmit(command)
+        uid = toHexString(response).replace(' ','')
+        return uid
+
+    def has_card(self):
+        cardtype = AnyCardType()
+        cardrequest = CardRequest( timeout=1, cardType=cardtype )
+
+        try:
+            cardservice = cardrequest.waitforcard()
+        except:
+            return False
+
+        return True
 
 
 class MyCardMonitor():
@@ -61,11 +88,16 @@ class MyCardMonitor():
 
     def start_observe(self):
         print("observer started")
-        #socketio.emit('newnumber', {'number': 'start'}, namespace='/test')
         self._cardmonitor.addObserver(self._selectobserver)
 
     def stop_observe(self):
         self._cardmonitor.deleteObserver(self._selectobserver)
+
+    def get_card_id(self):
+        return self._selectobserver.get_card_id()
+
+    def has_card(self):
+        return self._selectobserver.has_card()
 
 
 class CardMonitorThread(Thread):
@@ -80,13 +112,4 @@ class CardMonitorThread(Thread):
         self._start_card_monitor()
 
 
-def has_card():
-    cardtype = AnyCardType()
-    cardrequest = CardRequest( timeout=1, cardType=cardtype )
 
-    try:
-        cardservice = cardrequest.waitforcard()
-    except:
-        return False
-
-    return True

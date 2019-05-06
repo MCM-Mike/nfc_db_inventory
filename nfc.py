@@ -52,7 +52,7 @@ class selectDFTELECOMObserver(CardObserver):
             uid = toHexString(response).replace(' ','')
             print('card uid = ', uid)
 
-            socketio.emit('newnumber', {'number': uid}, namespace='/test')
+            socketio.emit('tagdata', {'number': uid}, namespace='/test')
 
             #new_tag = NfcTag(tag_id=uid)
             #session.add(new_tag)
@@ -75,7 +75,7 @@ class CardObserver():
 
     def start_observe(self):
         print("observer started")
-        socketio.emit('newnumber', {'number': 'start'}, namespace='/test')
+        socketio.emit('tagdata', {'number': 'start'}, namespace='/test')
         self._cardmonitor.addObserver(self._selectobserver)
 
     def stop_observe(self):
