@@ -98,7 +98,7 @@ def edit_nfctag():
         tag = NfcTag.query.get(tag_id)
 
         if tag is None:
-            tag = NfcTag(tag_id=uid)
+            tag = NfcTag(tag_id=tag_id)
             try:
                 db.session.add(tag)
                 db.session.commit()
