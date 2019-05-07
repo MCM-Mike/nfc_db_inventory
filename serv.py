@@ -55,12 +55,17 @@ def nfc_connect():
         print("Starting Thread")
         thread = CardMonitorThread(mycard_monitor)
         thread.start()
+        print('thread is alive', thread.isAlive())
 
 
 @socketio.on('disconnect', namespace='/nfc')
 def nfc_disconnect():
     print('Client disconnected')
-    #mycard_monitor.stop_observe()
+    global thread
+    # this should be enough to stop the thread
+    mycard_monitor.stop_observe()
+    print('thread is alive', thread.isAlive())
+    #thread._stop()
 
 
 @app.route('/get_status')
